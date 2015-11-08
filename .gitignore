@@ -1,2 +1,4 @@
 /ibm_nlp/target/classes/service/*.class
 /ibm_nlp/doc/~$ReadMe.docx
+.metadata
+RemoteSystemsTempFiles
