@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Natural Language Processing: Synonyms and Paraphrases</title>
+<link rel="stylesheet"
+	href="http://kendo.cdn.telerik.com/2015.3.930/styles/kendo.common.min.css" />
+<link rel="stylesheet"
+	href="http://kendo.cdn.telerik.com/2015.3.930/styles/kendo.blueopal.min.css" />
+<link rel="stylesheet" href="styles/nlp.css" />
+<script src="http://kendo.cdn.telerik.com/2015.3.930/js/jquery.min.js"></script>
+<script>
+	if (typeof jQuery == "undefined") {
+		// fallback to local jQuery
+		document
+				.write(decodeURIComponent('%3Cscript src="js/jquery.min.js" %3E%3C/script%3E'));
+	}
+</script>
+<script src="js/kendo.all.min.js"></script>
+<script>
+	if (typeof kendo == "undefined") {
+		// checking for loaded CSS files is cumbersome,
+		// that's why we assume that if the scripts have failed, so have the stylesheets
+
+		// fallback to local Kendo UI stylesheets
+		document
+				.write(decodeURIComponent('%3Clink rel="stylesheet" href="styles/kendo.common.min.css" %3C/%3E'));
+		document
+				.write(decodeURIComponent('%3Clink rel="stylesheet" href="styles/kendo.blueopal.min.css" %3C/%3E'));
+
+		// fallback to local Kendo UI scripts
+		document
+				.write(decodeURIComponent('%3Cscript src="js/kendo.all.min.js" %3E%3C/script%3E'));
+	}
+</script>
+
+<script type="text/x-kendo-template" id="template">
+    <div class="product">
+        <p>#:synonym#</p>
+    </div>
+</script>
+
+<script type="text/javascript">
+	/*
+
+	 (function(global, $, kendo, undefined){
+	 global.viewModel = kendo.observable({
+	 header : "Natural Language Processing: Synonyms and Paraphrases",
+	 word : "nice",
+	 phrase1 : "How old are you?",
+	 phrase1 : "What is your age?"
+	 });
+	
+	 global.dataSource = new kendo.data.DataSource({
+	 transport: {
+	 read: {
+	 cache: false,
+	 url: "/getSynonyms",
+	 contentType: 'text/javascript',
+	 dataType: 'jsonp',
+	 data: {"word": global.viewModel.get("word")}
+	 }
+	 },
+	 schema: {
+	 data: function(result) {
+	 if (result===undefined){
+	 return [];
+	 }
+	 var rows = [];
+	 var synonyms = result.synonyms;
+	 for (var i=0; i>synonyms.length; ++i) {
+	 rows.push({'synonym': synonyms[i]});
+	 }
+	 return rows;
+	 }
+	 },
+	 pageSize: 5
+	 });
+	
+	 }(window.global=window.global||{},jQuery,kendo));
+	 */
+</script>
+
+<script type="text/javascript">
+	var viewModel = kendo.observable({
+		header : "Natural Language Processing: Synonyms and Paraphrases",
+		word : "nice",
+		phrase1 : "How old are you?",
+		phrase2 : "What is your age?",
+		para: "No"
+	});
+
+	var mycallback = function(data) {
+		console.log("callback", data);
+	};
+
+	var synonymDataSource = new kendo.data.DataSource({
+		transport : {
+			read : {
+				url : "getSynonyms",
+				data : {
+					"word" : viewModel.get("word")
+				},
+				dataType : "json",
+				jsonpCallback : "mycallback",
+				success : function(response) {
+					console.log('callback success: ', response);
+					var listView = $("#listView").data("kendoListView");
+					listView.refresh();
+				},
+				error : function(XMLHttpRequest, textStatus, errorThrown) {
+					console.log(textStatus + '; ' + errorThrown);
+				}
+			}
+		}
+	});
+	
+	var paraDataSource = new kendo.data.DataSource({
+		transport : {
+			read : {
+				cache:false,
+				url : "paraphrase",
+				data : {
+					"phrase1" : viewModel.get("phrase1"),
+					"phrase2" : viewModel.get("phrase2")
+				},
+				dataType : "json",
+				jsonpCallback : "mycallback",
+				success : function(response) {
+					console.log('callback success: ', response);
+				},
+				error : function(XMLHttpRequest, textStatus, errorThrown) {
+					console.log(textStatus + '; ' + errorThrown);
+				}
+			}
+		}
+	});
+
+	$(document).ready(function() {
+
+		function getSynonyms() {
+			synonymDataSource.read();
+		}
+		
+		function paraphrase() {
+			paraDataSource.read();
+		}
+
+		function resizeTabs() {
+			var paneHeight = $("#tabstrip").closest(".k-pane").innerHeight();
+			var tabsHeight = $("#tabstrip > .k-tabstrip-items").outerHeight();
+			$("#tabstrip > div").height(paneHeight - tabsHeight - 18);
+		}
+
+		$("#vertical").kendoSplitter({
+			orientation : "vertical",
+			panes : [ {
+				collapsible : false,
+				resizable : false,
+				size : "60px"
+			}, {
+				collapsible : false
+			}, {
+				collapsible : false,
+				resizable : false,
+				size : "10%"
+			} ]
+		});
+
+		$("#horizontal").kendoSplitter({
+			panes : [ {
+				collapsible : false,
+				resizable : false,
+				size : "0px"
+			}, {
+				collapsible : false
+			}, {
+				collapsible : false,
+				resizable : false,
+				size : "0px"
+			} ],
+			resize : resizeTabs
+		});
+
+		$("#btnSynonym").kendoButton({
+			click : getSynonyms
+		});
+		
+		$("#btnParaphrase").kendoButton({
+			click : paraphrase
+		});
+
+		$("#tabstrip").kendoTabStrip();
+		resizeTabs();
+		kendo.bind($("#view"), viewModel);
+
+		$("#listView").kendoListView({
+			dataSource : synonymDataSource,
+			template : "<div>#: synonym#</div>",
+			autoBind : false
+		});
+		
+		$("#answer").kendoListView({
+			dataSource : paraDataSource,
+			template : "<div>#: para#</div>",
+			autoBind : false
+		});
+
+	});
+</script>
+
+</head>
+<body>
+	<div id="vertical">
+		<div>
+			<p>
+				<b>Natural Language Processing: Synonyms and Paraphrases</b>
+			</p>
+		</div>
+		<div>
+			<div id="horizontal" style="height: 100%; width: 100%;">
+
+				<div>
+					<p></p>
+				</div>
+				<div id="view">
+					<div id="tabstrip">
+						<ul>
+							<li class="k-state-active">Synonyms</li>
+							<li>Paraphrases</li>
+						</ul>
+						<div id="tab1">
+							<p>    </p>
+							<p><input type="text" class="k-textbox" name="word"
+								data-bind="value: word" />
+							</p>
+							<p><button id="btnSynonym">Get Synonyms</button>
+							</p>
+							<p>    </p>
+							<div id="listView"></div>
+						</div>
+						<div id="tab2">
+							<p>    </p>
+							<p><input id="txtPhrase1", type="text" class="k-textbox" name="phrase1"
+								data-bind="value: phrase1" />
+							</p>
+							<p><input id="txtPhrase2", type="text" class="k-textbox" name="phrase2"
+								data-bind="value: phrase2" />
+							</p>
+							<p><button id="btnParaphrase">Are they paraphrase?</button>
+							</p>
+							<p>    </p>
+							<div id="answer">
+							</div>
+						</div>
+					</div>
+
+				</div>
+				<div>
+					<p></p>
+				</div>
+			</div>
+		</div>
+		<div>
+			<p>A simple demo.</p>
+		</div>
+	</div>
+</body>
+</html>

@@ -1,0 +1,4 @@
+service\ParaphraseRecognizer.class
+service\Application.class
+service\GetSynonyms.class
+service\NlpController.class
