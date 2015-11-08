@@ -7,3 +7,4 @@
 .metadata/.plugins/org.eclipse.debug.core/*
 !.metadata/.plugins/org.eclipse.debug.core/.launches
 RemoteSystemsTempFiles
+http___download_eclipse_org_recommenders_models_mars_

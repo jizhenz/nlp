@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import wordnet.WordnetClient;
+
 
 @RestController
 public class NlpController {
@@ -22,5 +24,16 @@ public class NlpController {
     		@RequestParam(value="phrase1", defaultValue="") String phrase1
     	   ,@RequestParam(value="phrase2", defaultValue="") String phrase2) {
         return new ParaphraseRecognizer(phrase1, phrase2).getPara();
+    }
+    
+    @RequestMapping("/testWordnetDict")
+    public String testWordnetDict() {
+		WordnetClient wc = new WordnetClient();
+		try {
+			return wc.testDictionary();
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+		return "";
     }
 }
