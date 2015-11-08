@@ -1,4 +1,9 @@
 /ibm_nlp/target/classes/service/*.class
 /ibm_nlp/doc/~$ReadMe.docx
-.metadata
+.metadata/*
+!.metadata/.plugins
+.metadata/.plugins/*
+!.metadata/.plugins/org.eclipse.debug.core
+.metadata/.plugins/org.eclipse.debug.core/*
+!.metadata/.plugins/org.eclipse.debug.core/.launches
 RemoteSystemsTempFiles
