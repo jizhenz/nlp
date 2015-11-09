@@ -1,5 +1,5 @@
-wordnet\WordnetClient.class
 service\ParaphraseRecognizer.class
 service\GetSynonyms.class
 service\NlpController.class
 service\Application.class
+wordnet\WordnetClient.class

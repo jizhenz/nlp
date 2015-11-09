@@ -5,23 +5,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import wordnet.WordnetClient;
+
 public class GetSynonyms {
 
     private final String word;
+    private final WordnetClient wc;
 
-    public GetSynonyms(String word) {
+    public GetSynonyms(String word) throws Exception {
         this.word = word;
+		this.wc = WordnetClient.getWordnetClient();
     }
 
     public List<Map<String,String>> getSynonyms() {
-    	List<Map<String,String>> wordList = new ArrayList<Map<String,String>>();
-    	Map<String,String> map = null;
-    	for (int i=1; i<10; i++) {
-    		map = new HashMap<String,String>();
-    		map.put("id",""+i);
-    		map.put("synonym","word_"+i);
-    		wordList.add(map);
-    	}
-    	return wordList;
+    	return this.wc.getSynonyms(this.word);
     }
 }

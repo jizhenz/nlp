@@ -15,7 +15,7 @@ public class NlpController {
 
 
     @RequestMapping("/getSynonyms")
-    public List<Map<String,String>> getSynonyms(@RequestParam(value="word", defaultValue="word") String word) {
+    public List<Map<String,String>> getSynonyms(@RequestParam(value="word", defaultValue="word") String word) throws Exception {
     	return new GetSynonyms(word).getSynonyms();
     }
     
@@ -28,8 +28,9 @@ public class NlpController {
     
     @RequestMapping("/testWordnetDict")
     public String testWordnetDict() {
-		WordnetClient wc = new WordnetClient();
+		WordnetClient wc = null;
 		try {
+			wc = WordnetClient.getWordnetClient();
 			return wc.testDictionary();
 		} catch (Exception e) {
 			System.out.println(e.getMessage());

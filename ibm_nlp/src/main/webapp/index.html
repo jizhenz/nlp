@@ -81,68 +81,60 @@
 </script>
 
 <script type="text/javascript">
-	var viewModel = kendo.observable({
-		header : "Natural Language Processing: Synonyms and Paraphrases",
-		word : "nice",
-		phrase1 : "How old are you?",
-		phrase2 : "What is your age?",
-		para: "No"
-	});
-
-	var mycallback = function(data) {
-		console.log("callback", data);
-	};
-
-	var synonymDataSource = new kendo.data.DataSource({
-		transport : {
-			read : {
-				url : "getSynonyms",
-				data : {
-					"word" : viewModel.get("word")
-				},
-				dataType : "json",
-				jsonpCallback : "mycallback",
-				success : function(response) {
-					console.log('callback success: ', response);
-					var listView = $("#listView").data("kendoListView");
-					listView.refresh();
-				},
-				error : function(XMLHttpRequest, textStatus, errorThrown) {
-					console.log(textStatus + '; ' + errorThrown);
-				}
-			}
-		}
-	});
-	
-	var paraDataSource = new kendo.data.DataSource({
-		transport : {
-			read : {
-				cache:false,
-				url : "paraphrase",
-				data : {
-					"phrase1" : viewModel.get("phrase1"),
-					"phrase2" : viewModel.get("phrase2")
-				},
-				dataType : "json",
-				jsonpCallback : "mycallback",
-				success : function(response) {
-					console.log('callback success: ', response);
-				},
-				error : function(XMLHttpRequest, textStatus, errorThrown) {
-					console.log(textStatus + '; ' + errorThrown);
-				}
-			}
-		}
-	});
-
 	$(document).ready(function() {
 
+		var viewModel = kendo.observable({
+			header : "Natural Language Processing: Synonyms and Paraphrases",
+			word : "nice",
+			phrase1 : "How old are you?",
+			phrase2 : "What is your age?",
+			para : "No"
+		});
+
+		kendo.bind($("#view"), viewModel);
+
+		var mycallback = function(data) {
+			console.log("callback", data);
+		};
+
 		function getSynonyms() {
-			synonymDataSource.read();
+			var synonymDataSource = new kendo.data.DataSource({
+				transport : {
+					read : {
+						cache : false,
+						url : "getSynonyms",
+						data : {
+							"word" : viewModel.get("word")
+						},
+						dataType : "json"
+					}
+				}
+			});
+			$("#listView").kendoListView({
+				dataSource : synonymDataSource,
+				template : "<div>#: synonym#</div>",
+			});
 		}
-		
+
 		function paraphrase() {
-			paraDataSource.read();
+			var paraDataSource = new kendo.data.DataSource({
+				
+				transport : {
+					read : {
+						cache : false,
+						url : "paraphrase",
+						data : {
+							"phrase1" : viewModel.get("phrase1"), 
+							"phrase2" : viewModel.get("phrase2")
+						},
+						dataType : "json"
+					}
+				}
+			});
+			$("#answer").kendoListView({
+				dataSource : paraDataSource,
+				template : "<div>#: para#</div>",
+			});
 		}
 
 		function resizeTabs() {
@@ -184,26 +176,13 @@
 		$("#btnSynonym").kendoButton({
 			click : getSynonyms
 		});
-		
+
 		$("#btnParaphrase").kendoButton({
 			click : paraphrase
 		});
 
 		$("#tabstrip").kendoTabStrip();
 		resizeTabs();
-		kendo.bind($("#view"), viewModel);
-
-		$("#listView").kendoListView({
-			dataSource : synonymDataSource,
-			template : "<div>#: synonym#</div>",
-			autoBind : false
-		});
-		
-		$("#answer").kendoListView({
-			dataSource : paraDataSource,
-			template : "<div>#: para#</div>",
-			autoBind : false
-		});
 
 	});
 </script>
@@ -229,28 +208,32 @@
 							<li>Paraphrases</li>
 						</ul>
 						<div id="tab1">
-							<p>    </p>
-							<p><input type="text" class="k-textbox" name="word"
-								data-bind="value: word" />
+							<p></p>
+							<p>
+								<input type="text" class="k-textbox" id="word"
+									data-bind="value: word" />
 							</p>
-							<p><button id="btnSynonym">Get Synonyms</button>
+							<p>
+								<button id="btnSynonym">Get Synonyms</button>
 							</p>
-							<p>    </p>
+							<p></p>
 							<div id="listView"></div>
 						</div>
 						<div id="tab2">
-							<p>    </p>
-							<p><input id="txtPhrase1", type="text" class="k-textbox" name="phrase1"
-								data-bind="value: phrase1" />
+							<p></p>
+							<p>
+								<input id="txtPhrase1" , type="text" class="k-textbox"
+									name="phrase1" data-bind="value: phrase1" />
 							</p>
-							<p><input id="txtPhrase2", type="text" class="k-textbox" name="phrase2"
-								data-bind="value: phrase2" />
+							<p>
+								<input id="txtPhrase2" , type="text" class="k-textbox"
+									name="phrase2" data-bind="value: phrase2" />
 							</p>
-							<p><button id="btnParaphrase">Are they paraphrase?</button>
+							<p>
+								<button id="btnParaphrase">Are they paraphrase?</button>
 							</p>
-							<p>    </p>
-							<div id="answer">
-							</div>
+							<p></p>
+							<div id="answer"></div>
 						</div>
 					</div>
 
