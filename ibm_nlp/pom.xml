@@ -81,28 +81,12 @@
 									<directory>wordnet</directory>
 								</resource>
 							</resources>
-						</configuration>
-					</execution>
-					<execution>
-						<phase>compile</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
 							<outputDirectory>target/weka</outputDirectory>
 							<resources>
 								<resource>
 									<directory>weka</directory>
 								</resource>
 							</resources>
-						</configuration>
-					</execution>
-					<execution>
-						<phase>compile</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
 							<outputDirectory>target/opennlp</outputDirectory>
 							<resources>
 								<resource>
