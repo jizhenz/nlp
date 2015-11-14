@@ -1,13 +1,6 @@
 package paraphrase;
 
-import static org.junit.Assert.*;
-
-import java.util.List;
-import java.util.Map;
-
 import org.junit.Test;
-
-import wordnet.WordnetClient;
 
 public class WekaRandomForestTest {
 

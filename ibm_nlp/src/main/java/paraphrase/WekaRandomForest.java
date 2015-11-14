@@ -13,7 +13,6 @@ import opennlp.tools.postag.POSTaggerME;
 import opennlp.tools.tokenize.Tokenizer;
 import opennlp.tools.tokenize.TokenizerME;
 import opennlp.tools.tokenize.TokenizerModel;
-import opennlp.tools.util.ObjectStream;
 import weka.classifiers.trees.RandomForest;
 
 public class WekaRandomForest {
