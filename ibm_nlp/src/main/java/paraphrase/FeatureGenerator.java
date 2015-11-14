@@ -1,7 +1,11 @@
 package paraphrase;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class FeatureGenerator {
 
@@ -101,5 +105,142 @@ public class FeatureGenerator {
 		double dw = dj + l*0.1*(1-dj);
 
 		return dw;
+	}
+	
+	public static  Map<String,Integer>[] get_onehot_vector(String [] sentence_1, String [] sentence_2) {
+		Set<String> words = new HashSet<String>();
+		
+		for (String w : sentence_1) {
+			words.add(w);
+		}
+		for (String w : sentence_2) {
+			words.add(w);
+		}
+
+		Map<String,Integer> x = new HashMap<String, Integer>();
+		Map<String,Integer> y = new HashMap<String, Integer>();
+
+		for (String w : words) {
+			x.put(w,0);
+			y.put(w,0);
+		}
+
+		for (String w : sentence_1) {
+			x.put(w,x.get(w)+1);
+		}
+		for (String w : sentence_2) {
+			y.put(w,y.get(w)+1);
+		}
+
+		@SuppressWarnings("unchecked")
+		Map<String,Integer>[] m = ((Map<String,Integer>[]) new Object[2]); 
+		m[0] = x;
+		m[1] = y;
+		return m;
+	}
+	
+	public static int get_manhattan_distance(String[] sentence_1, String[] sentence_2) {
+		Map<String,Integer>[] m = get_onehot_vector(sentence_1, sentence_2);
+		Map<String,Integer> x = m[0];
+		Map<String,Integer> y = m[1];
+
+		int dis = 0;
+		for (String w : x.keySet()){
+			dis += Math.max(x.get(w) - y.get(w), y.get(w) - x.get(w));
+		}
+
+		return dis;
+	}
+	
+	public static double get_euclidean_distance(String[] sentence_1, String[] sentence_2) {
+		Map<String,Integer>[] m = get_onehot_vector(sentence_1, sentence_2);
+		Map<String,Integer> x = m[0];
+		Map<String,Integer> y = m[1];
+
+		int dis = 0;
+		for (String w : x.keySet()){
+			dis += (x.get(w) - y.get(w)) * (y.get(w) - x.get(w));
+		}
+
+		return Math.sqrt(dis);
+	}
+	
+	public static double get_cosine_distance(String[] sentence_1, String[] sentence_2) {
+		Map<String,Integer>[] m = get_onehot_vector(sentence_1, sentence_2);
+		Map<String,Integer> x = m[0];
+		Map<String,Integer> y = m[1];
+		
+		int len_x = 0;
+		int len_y = 0;
+		int xy = 0;
+		
+		for (String w : x.keySet()){
+			len_x += x.get(w) * x.get(w);
+			len_y += y.get(w) * y.get(w);
+			xy += x.get(w) * y.get(w);
+		}
+
+		if (0==len_x || 0==len_y) {
+			return 0.0;
+		}
+		return xy/Math.sqrt(len_x)/Math.sqrt(len_y);
+	}
+
+	public static int get_ngram_distance(String[] sentence_1, String[] sentence_2) {
+		int len_1=sentence_1.length;
+		int len_2=sentence_2.length;
+		String[] mod_sentence_1 = new String[len_1-2];
+		String[] mod_sentence_2 = new String[len_2-2];
+
+		for (int i=0; i<len_1-2; i++) {
+			mod_sentence_1[i]= String.join(" ", sentence_1[i], sentence_1[i+1], sentence_1[i+2]);
+		}
+		
+		for (int i=0; i<len_2-2; i++) {
+			mod_sentence_2[i]= String.join(" ", sentence_2[i], sentence_2[i+1], sentence_2[i+2]);
+		}
+
+		return get_manhattan_distance(mod_sentence_1, mod_sentence_2);
+	}
+
+	public static int get_matching_coefficient(String[] sentence_1, String[] sentence_2) {
+		Map<String,Integer>[] m = get_onehot_vector(sentence_1, sentence_2);
+		Map<String,Integer> x = m[0];
+		Map<String,Integer> y = m[1];
+
+		int cnt_xy = 0;
+		for (String w : x.keySet()) {
+			if (null != x.get(w) && 0 != x.get(w) && null != y.get(w) && 0 != y.get(w)){
+				cnt_xy += 1;
+			}
+		}
+		return cnt_xy;
+	}
+		
+	public static double get_dice_coefficient(String[] sentence_1, String[] sentence_2) {
+		Map<String,Integer>[] m = get_onehot_vector(sentence_1, sentence_2);
+		Map<String,Integer> x = m[0];
+		Map<String,Integer> y = m[1];
+		
+		int cnt_xy = 0;
+		int cnt_x = 0;
+		int cnt_y = 0;
+		for (String w : x.keySet()) {
+			if (null != x.get(w) && 0 != x.get(w)){
+				cnt_x += 1;
+			}
+			if (null != y.get(w) && 0 != y.get(w)){
+				cnt_y += 1;
+			}
+			if (null != x.get(w) && 0 != x.get(w) && null != y.get(w) && 0 != y.get(w)){
+				cnt_xy += 1;
+			}
+		}
+
+		if ( 0 == cnt_x + cnt_y) {
+			return 0;
+		}
+
+		return 2.0*cnt_xy/(cnt_x + cnt_y);
 	}
 }
