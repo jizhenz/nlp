@@ -8,7 +8,24 @@ import java.util.Map;
 import java.util.Set;
 
 public class FeatureGenerator {
+	
+	private static final int BIG_NUMBER = 1_000_000;
 
+	/**
+	 * Code in https://github.com/wead-hsu/paraphrase-recognition/blob/master/src/Feature_Generator.py
+	 * is not write. Also based on:
+	 *   https://en.wikipedia.org/wiki/Edit_distance
+	 *   http://stackoverflow.com/questions/5055839/word-level-edit-distance-of-a-sentence
+	 * 
+	 * Uses: Wagner–Fischer algorithm - Dynamic Algorithm
+	 * 
+	 * Time: theta(mn) 
+	 * Space: theta(mn). linear space version: Hirschberg's algorithm 
+	 * 
+	 * @param sentence_1
+	 * @param sentence_2
+	 * @return int
+	 */
 	public static int get_edit_distance(String[] sentence_1, String[] sentence_2){
 		int len_1 = sentence_1.length;
 		int len_2 = sentence_2.length;
@@ -17,33 +34,36 @@ public class FeatureGenerator {
 			return Math.max(len_1, len_2);
 		}
 
-		int dp[][] = new int[len_1][len_2];
+		int dp[][] = new int[len_1+1][len_2+1];
 		
-		for (int i=0; i<len_1; i++) {
-			for (int j=0; j<len_2; j++) {
-				dp[i][j] = 1000;
+		for (int i=0; i<=len_1; i++) {
+			for (int j=0; j<=len_2; j++) {
+				dp[i][j] = BIG_NUMBER;
 			}
 		}
 		dp[0][0] = 0;
-		for (int i=0; i<len_1; i++) {
-			for (int j=0; j<len_2; j++) {
-				if (i > 0) {
-					dp[i][j] = Math.min(dp[i][j], dp[i-1][j] + 1);
-				}
-				if (j > 0) {
-					dp[i][j] = Math.min(dp[i][j], dp[i][j-1] + 1);
-				}
-				if (sentence_1[i].equals(sentence_2[j])){
-					dp[i][j] = Math.min(dp[i][j], dp[i-1][j-1]);
-				}
-				else {
-					dp[i][j] = Math.min(dp[i][j], dp[i-1][j-1] + 1);
-				}
+		for(int i=1; i<=len_1; ++i) dp[i][0]=i; 
+	    for(int i=1; i<=len_2; ++i) dp[0][i]=i;
+	     
+		for (int i=1; i<=len_1; i++) {
+			for (int j=1; j<=len_2; j++) {
+				dp[i][j] = Math.min( Math.min(dp[i - 1][j] + 1,dp[i][j - 1] + 1),
+			              dp[i - 1][j - 1] + (sentence_1[i-1].equals(sentence_2[j-1]) ? 0 : 1) );
 			}
 		}
-		return dp[len_1-1][len_2-1];
+		return dp[len_1][len_2];
 	}
 	
+	/**
+	 * Jaro-Winkler distance
+	 * 
+	 * https://en.wikipedia.org/wiki/Jaro%E2%80%93Winkler_distance
+	 * https://github.com/wead-hsu/paraphrase-recognition/blob/master/src/Feature_Generator.py
+	 * 
+	 * @param sentence_1
+	 * @param sentence_2
+	 * @return
+	 */
 	public static double get_jw_distance(String[] sentence_1, String[] sentence_2){
 		String sen_1 = String.join("", sentence_1);
 		String sen_2 = String.join("", sentence_2);
@@ -107,7 +127,7 @@ public class FeatureGenerator {
 		return dw;
 	}
 	
-	public static  Map<String,Integer>[] get_onehot_vector(String [] sentence_1, String [] sentence_2) {
+	public static  Object[] get_onehot_vector(String [] sentence_1, String [] sentence_2) {
 		Set<String> words = new HashSet<String>();
 		
 		for (String w : sentence_1) {
@@ -132,17 +152,22 @@ public class FeatureGenerator {
 			y.put(w,y.get(w)+1);
 		}
 
-		@SuppressWarnings("unchecked")
-		Map<String,Integer>[] m = ((Map<String,Integer>[]) new Object[2]); 
-		m[0] = x;
-		m[1] = y;
+		Object[] m = new Object[2]; 
+		m[0] = (Object)x;
+		m[1] = (Object)y;
 		return m;
 	}
 	
+	/**
+	 * https://en.wikipedia.org/wiki/Taxicab_geometry
+	 * @param sentence_1
+	 * @param sentence_2
+	 * @return int
+	 */
 	public static int get_manhattan_distance(String[] sentence_1, String[] sentence_2) {
-		Map<String,Integer>[] m = get_onehot_vector(sentence_1, sentence_2);
-		Map<String,Integer> x = m[0];
-		Map<String,Integer> y = m[1];
+		Object[] m = get_onehot_vector(sentence_1, sentence_2);
+		Map<String,Integer> x = (Map<String,Integer>)(m[0]);
+		Map<String,Integer> y = (Map<String,Integer>)(m[1]);
 
 		int dis = 0;
 		for (String w : x.keySet()){
@@ -152,23 +177,35 @@ public class FeatureGenerator {
 		return dis;
 	}
 	
+	/**
+	 * https://en.wikipedia.org/wiki/Euclidean_distance
+	 * @param sentence_1
+	 * @param sentence_2
+	 * @return double
+	 */
 	public static double get_euclidean_distance(String[] sentence_1, String[] sentence_2) {
-		Map<String,Integer>[] m = get_onehot_vector(sentence_1, sentence_2);
-		Map<String,Integer> x = m[0];
-		Map<String,Integer> y = m[1];
+		Object[] m = get_onehot_vector(sentence_1, sentence_2);
+		Map<String,Integer> x = (Map<String,Integer>)(m[0]);
+		Map<String,Integer> y = (Map<String,Integer>)(m[1]);
 
 		int dis = 0;
 		for (String w : x.keySet()){
-			dis += (x.get(w) - y.get(w)) * (y.get(w) - x.get(w));
+			dis += (x.get(w) - y.get(w)) * (x.get(w) - y.get(w));
 		}
 
 		return Math.sqrt(dis);
 	}
 	
+	/**
+	 * https://en.wikipedia.org/wiki/Cosine_similarity
+	 * @param sentence_1
+	 * @param sentence_2
+	 * @return
+	 */
 	public static double get_cosine_distance(String[] sentence_1, String[] sentence_2) {
-		Map<String,Integer>[] m = get_onehot_vector(sentence_1, sentence_2);
-		Map<String,Integer> x = m[0];
-		Map<String,Integer> y = m[1];
+		Object[] m = get_onehot_vector(sentence_1, sentence_2);
+		Map<String,Integer> x = (Map<String,Integer>)(m[0]);
+		Map<String,Integer> y = (Map<String,Integer>)(m[1]);
 		
 		int len_x = 0;
 		int len_y = 0;
@@ -186,6 +223,12 @@ public class FeatureGenerator {
 		return xy/Math.sqrt(len_x)/Math.sqrt(len_y);
 	}
 
+	/**
+	 * Uses 3-gram
+	 * @param sentence_1
+	 * @param sentence_2
+	 * @return int
+	 */
 	public static int get_ngram_distance(String[] sentence_1, String[] sentence_2) {
 		int len_1=sentence_1.length;
 		int len_2=sentence_2.length;
@@ -203,10 +246,16 @@ public class FeatureGenerator {
 		return get_manhattan_distance(mod_sentence_1, mod_sentence_2);
 	}
 
+	/**
+	 * https://en.wikipedia.org/wiki/Simple_matching_coefficient
+	 * @param sentence_1
+	 * @param sentence_2
+	 * @return
+	 */
 	public static int get_matching_coefficient(String[] sentence_1, String[] sentence_2) {
-		Map<String,Integer>[] m = get_onehot_vector(sentence_1, sentence_2);
-		Map<String,Integer> x = m[0];
-		Map<String,Integer> y = m[1];
+		Object[] m = get_onehot_vector(sentence_1, sentence_2);
+		Map<String,Integer> x = (Map<String,Integer>)(m[0]);
+		Map<String,Integer> y = (Map<String,Integer>)(m[1]);
 
 		int cnt_xy = 0;
 		for (String w : x.keySet()) {
@@ -216,11 +265,17 @@ public class FeatureGenerator {
 		}
 		return cnt_xy;
 	}
-		
+	
+	/**
+	 * https://en.wikipedia.org/wiki/S%C3%B8rensen%E2%80%93Dice_coefficient
+	 * @param sentence_1
+	 * @param sentence_2
+	 * @return
+	 */
 	public static double get_dice_coefficient(String[] sentence_1, String[] sentence_2) {
-		Map<String,Integer>[] m = get_onehot_vector(sentence_1, sentence_2);
-		Map<String,Integer> x = m[0];
-		Map<String,Integer> y = m[1];
+		Object[] m = get_onehot_vector(sentence_1, sentence_2);
+		Map<String,Integer> x = (Map<String,Integer>)(m[0]);
+		Map<String,Integer> y = (Map<String,Integer>)(m[1]);
 		
 		int cnt_xy = 0;
 		int cnt_x = 0;
@@ -238,9 +293,41 @@ public class FeatureGenerator {
 		}
 
 		if ( 0 == cnt_x + cnt_y) {
-			return 0;
+			return 0.0;
 		}
 
 		return 2.0*cnt_xy/(cnt_x + cnt_y);
+	}
+	
+	/**
+	 * Count(A and B)/Count(A or B)
+	 * https://en.wikipedia.org/wiki/Jaccard_index
+	 * @param sentence_1
+	 * @param sentence_2
+	 * @return
+	 */
+	public static double get_jaccard_coefficient(String[] sentence_1, String[] sentence_2) {
+		Object[] m = get_onehot_vector(sentence_1, sentence_2);
+		Map<String,Integer> x = (Map<String,Integer>)(m[0]);
+		Map<String,Integer> y = (Map<String,Integer>)(m[1]);
+		
+		if (x.keySet().isEmpty()) {
+			return 0;
+		}
+
+		int cnt_xy = 0;
+		int cnt_x_or_y = 0;
+		for (String w : x.keySet()) {
+			if (null != x.get(w) && 0 != x.get(w) && null != y.get(w) && 0 != y.get(w)){
+				cnt_xy += 1;
+			}
+			cnt_x_or_y += 1;
+		}
+		for (String w : y.keySet()) {
+			if (!x.containsKey(w)) {
+				cnt_x_or_y += 1;
+			}
+		}
+		return 1.0*cnt_xy/cnt_x_or_y;
 	}
 }

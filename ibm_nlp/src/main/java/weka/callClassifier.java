@@ -1,3 +1,4 @@
+package weka;
 /*
  * Example class which creates a classifier and evaluates it via cross-
  * validation (or test set), outputting the complete class
@@ -40,11 +41,12 @@ public class callClassifier {
 
       String classIdx = Utils.getOption('c',argv);
       String seedS = Utils.getOption('s',argv);
+      
       if (seedS.length()!=0) {
         seed=Integer.parseInt(seedS);
       }
 
-      Classifier c = Classifier.forName(classifierName,argv);
+      Classifier cccc = Classifier.forName(classifierName,argv);
 
       Instances trainData = new Instances(new FileReader(trainFile));
       Instances testData = null;
@@ -98,14 +100,14 @@ public class callClassifier {
 
         for (int i=0; i<numFolds; i++) {
           Instances train = trainData.trainCV(numFolds,i);
-          c.buildClassifier(train);
+          cccc.buildClassifier(train);
           testData = trainData.testCV(numFolds,i);
           Instances indicesTest = indices.testCV(numFolds,i);
           for (int j=0; j<testData.numInstances(); j++) {
             Instance instance = testData.instance(j);
             Instance withMissing = (Instance)instance.copy();
             withMissing.setDataset(testData);
-            double predValue=((Classifier)c).classifyInstance(instance);
+            double predValue=((Classifier)cccc).classifyInstance(instance);
             int idx=(int)indicesTest.instance(j).value(0);
             double trueValue=indicesTest.instance(j).value(1);
 
@@ -131,10 +133,10 @@ public class callClassifier {
               if (Instance.isMissingValue(predValue)) {
                 System.out.print("missing" + delim);
               } else {
-                System.out.print(c.distributionForInstance(withMissing)[(int)predValue]+delim);
+                System.out.print(cccc.distributionForInstance(withMissing)[(int)predValue]+delim);
               }
               System.out.print(testData.classAttribute().value((int)trueValue));
-              double[] dist=c.distributionForInstance(instance);
+              double[] dist=cccc.distributionForInstance(instance);
               for (int k=0; k<dist.length; k++)
                 System.out.print(delim+dist[k]);
             /* Note: the order of class probabilities corresponds
@@ -145,13 +147,13 @@ public class callClassifier {
         }
       } else {
         testData.setClassIndex(cIdx);
-        c.buildClassifier(trainData);
+        cccc.buildClassifier(trainData);
 
         for (int i=0; i<testData.numInstances(); i++) {
           Instance instance = testData.instance(i);
           Instance withMissing = (Instance)instance.copy();
           withMissing.setDataset(testData);
-          double predValue=((Classifier)c).classifyInstance(instance);
+          double predValue=((Classifier)cccc).classifyInstance(instance);
           int idx=i;
           double trueValue=instance.classValue();
 
@@ -177,11 +179,11 @@ public class callClassifier {
             if (Instance.isMissingValue(predValue)) {
               System.out.print("missing" + delim);
             } else {
-              System.out.print(c.
+              System.out.print(cccc.
                 distributionForInstance(withMissing)[(int)predValue]+delim);
             }
             System.out.print(testData.classAttribute().value((int)trueValue));
-            double[] dist=(c.distributionForInstance(instance));
+            double[] dist=(cccc.distributionForInstance(instance));
             for (int k=0; k<dist.length; k++)
               System.out.print(delim+dist[k]);
             /* Note: the order of class probabilities corresponds

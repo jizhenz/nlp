@@ -1,7 +1,11 @@
 C:\Users\jizhen\Documents\GitHub\nlp\ibm_nlp\src\main\java\service\ParaphraseRecognizer.java
 C:\Users\jizhen\Documents\GitHub\nlp\ibm_nlp\src\main\java\paraphrase\WekaRandomForest.java
+C:\Users\jizhen\Documents\GitHub\nlp\ibm_nlp\src\main\java\paraphrase\FeatureGenerator.java
+C:\Users\jizhen\Documents\GitHub\nlp\ibm_nlp\src\main\java\weka\callClassifier.java
+C:\Users\jizhen\Documents\GitHub\nlp\ibm_nlp\src\main\java\paraphrase\Sentence.java
 C:\Users\jizhen\Documents\GitHub\nlp\ibm_nlp\src\main\java\service\GetSynonyms.java
 C:\Users\jizhen\Documents\GitHub\nlp\ibm_nlp\src\main\java\service\NlpController.java
 C:\Users\jizhen\Documents\GitHub\nlp\ibm_nlp\src\main\java\paraphrase\PairGenerator.java
 C:\Users\jizhen\Documents\GitHub\nlp\ibm_nlp\src\main\java\wordnet\WordnetClient.java
 C:\Users\jizhen\Documents\GitHub\nlp\ibm_nlp\src\main\java\service\Application.java
+C:\Users\jizhen\Documents\GitHub\nlp\ibm_nlp\src\main\java\util\Util.java

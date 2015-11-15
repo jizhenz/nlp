@@ -10,7 +10,7 @@ import util.Util;
 public class SentenceTest {
 
 	@BeforeClass
-	public static void oneTimeSetUp() throws IOException {
+	public static void oneTimeSetUp() throws IOException, ClassNotFoundException {
 		Util.init();
 	}
 
