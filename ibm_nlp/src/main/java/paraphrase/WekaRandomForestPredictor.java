@@ -1,36 +1,38 @@
 package paraphrase;
 
-import java.io.IOException;
-
-import util.Util;
+import weka.core.Instance;
 import weka.classifiers.trees.RandomForest;
+import weka.filters.unsupervised.instance.Randomize;
 
 public class WekaRandomForestPredictor {
 
-	private RandomForest rf;
-
-	public WekaRandomForestPredictor() throws IOException, ClassNotFoundException {
-		this.rf = Util.getRf();
+	private static Weka wekaSingle;
+	public static void init() throws Exception {
+		String[] options = { "-I", "15", "-K", "30", "-S", "1" };
+		String name = "weka.classifiers.trees.RandomForest";
+		String filterName = "weka.filters.unsupervised.instance.Randomize";
+		String[] filterOptions = { "-S", "42" };
+		String dir = "/weka/msr/";
+		String trainName = "msr_paraphrase_train";
+		String testName = "msr_paraphrase_test";
+		int classIndex = 0;
+		wekaSingle = Weka.getSingleton(name, options, filterName, filterOptions, dir, trainName, testName, classIndex);
 	}
 
-	public boolean predict(String sentence_1, String sentence_2) throws IOException {
+	public WekaRandomForestPredictor(){
+	}
+
+	public boolean predict(String sentence_1, String sentence_2) throws Exception {
 		boolean isPara = false;
-		
-		Sentence s1=null, s2=null;
-		IOException ioe = null;
-		
+		FeatureGenerator fg = null;
 		try {
-			int nf = rf.getNumFeatures();
-			s1 = new Sentence(sentence_1);
-			s2 = new Sentence(sentence_2);
-			
-		} catch (IOException e) {
-			ioe = e;
-			throw ioe;
-		} finally {
-			
+			fg = new FeatureGenerator();
+			Instance instance = fg.generateInstance(wekaSingle.m_TrainingSet, sentence_1, sentence_2);
+			double[] probs = wekaSingle.classify(instance);
+			isPara = (probs[0] < probs[1]) ? true : false;
+		} catch (Exception e) {
+			throw e;
 		}
-		
 		return isPara;
 	}
 

@@ -67,9 +67,10 @@
 			<!-- Copy static web files before executing gwt:run -->
 			<plugin>
 				<artifactId>maven-resources-plugin</artifactId>
-				<version>2.4.2</version>
+				<version>2.6</version>
 				<executions>
 					<execution>
+						<id>copy-resources-1</id>
 						<phase>compile</phase>
 						<goals>
 							<goal>copy-resources</goal>
@@ -81,12 +82,30 @@
 									<directory>wordnet</directory>
 								</resource>
 							</resources>
+						</configuration>
+					</execution>
+					<execution>
+						<id>copy-resources-2</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
 							<outputDirectory>target/weka</outputDirectory>
 							<resources>
 								<resource>
 									<directory>weka</directory>
 								</resource>
 							</resources>
+						</configuration>
+					</execution>
+					<execution>
+						<id>copy-resources-3</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
 							<outputDirectory>target/opennlp</outputDirectory>
 							<resources>
 								<resource>

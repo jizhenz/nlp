@@ -27,11 +27,12 @@ public class WekaParaphraseDataLoaderTest {
 			is = loader.loadArffIncrementally(Util.getCurrentPath() + "/weka/SVM.C10-fea.130.arff", -1);
 			printInstances(is);
 			is = null;
-			is = loader.load(Util.getCurrentPath() + "/weka/msr/msr_paraphrase_train.txt", null);
+			is = loader.load("train", Util.getCurrentPath() + "/weka/msr/msr_paraphrase_train.txt", 
+					Util.getCurrentPath() + "/weka/msr/msr_paraphrase_train.arff", 0);
+			is = null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
 	}
 	
 	private void printInstances(Instances is) {

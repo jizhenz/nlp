@@ -1,10 +1,15 @@
-paraphrase\WekaRandomForest.class
+paraphrase\DATA.class
 paraphrase\PairGenerator.class
 service\NlpController.class
 util\Util.class
+paraphrase\WekaRandomForestPredictor.class
 wordnet\WordnetClient.class
 paraphrase\Sentence.class
 service\ParaphraseRecognizer.class
+paraphrase\FEATURE.class
 service\GetSynonyms.class
 paraphrase\FeatureGenerator.class
 service\Application.class
+paraphrase\FeatureGenerator$1.class
+paraphrase\Weka.class
+paraphrase\WekaParaphraseDataLoader.class

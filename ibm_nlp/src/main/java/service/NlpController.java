@@ -22,7 +22,7 @@ public class NlpController {
     @RequestMapping("/paraphrase")
     public List<Map<String,String>> paraphraseRecognizer(
     		@RequestParam(value="phrase1", defaultValue="") String phrase1
-    	   ,@RequestParam(value="phrase2", defaultValue="") String phrase2) {
+    	   ,@RequestParam(value="phrase2", defaultValue="") String phrase2) throws Exception {
         return new ParaphraseRecognizer(phrase1, phrase2).getPara();
     }
     

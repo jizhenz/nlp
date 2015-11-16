@@ -1,9 +1,11 @@
 package paraphrase;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 
 import weka.core.Instances;
@@ -66,22 +68,37 @@ public class WekaParaphraseDataLoader {
 		return structure;
 	}
 
-	public Instances load(String path, String exportFilePath) throws FileNotFoundException, IOException {
+	public Instances load(String relationName, String path, String exportFilePath, int classIndex) 
+			throws FileNotFoundException, IOException {
 		Instances data = null;
+		FeatureGenerator fg = null;
 		
-		try(BufferedReader br = new BufferedReader(new FileReader(path))) {
+		try(BufferedReader br = new BufferedReader(new FileReader(path));
+			BufferedWriter bw = (null != exportFilePath && !exportFilePath.trim().isEmpty()) ? 
+					new BufferedWriter(new FileWriter(exportFilePath)) : null) {
 		    StringBuilder sb = new StringBuilder();
+		    fg = new FeatureGenerator();
+		    sb.append(fg.generateArffHeader(relationName));
 		    String line = br.readLine();
-
+		    line = br.readLine();
 		    while (line != null) {
-		        sb.append(line);
-		        sb.append(System.lineSeparator());
+		        String parts[] = line.split("\t");
+		        sb.append(parts[0]);
+		        double values[] = fg.generateArffDataRow(parts[3], parts[4]);
+		        for (double v : values) {
+		        	sb.append(","+v);
+		        }
+		        sb.append("\n");
 		        line = br.readLine();
 		    }
 		    
-		    String everything = sb.toString();
+		    if (null != bw) {
+		    	bw.write(sb.toString());
+		    }
 		}
-		
+		if (null != exportFilePath && !exportFilePath.trim().isEmpty()) {
+			data = loadArff(exportFilePath, classIndex);
+		}
 		return data;
 	}
 }

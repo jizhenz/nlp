@@ -10,6 +10,12 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import weka.core.Attribute;
+import weka.core.DenseInstance;
+import weka.core.FastVector;
+import weka.core.Instance;
+import weka.core.Instances;
+
 public class FeatureGenerator {
 
 	private static final int BIG_NUMBER = 1_000_000;
@@ -374,7 +380,7 @@ public class FeatureGenerator {
 				if (!this.featureOption.get(f)) {
 					continue;
 				}
-				sb.append("@attribute " + d.name() + "." + f.name() + " real\n");
+				sb.append("@attribute " + d.name() + "." + f.name() + " NUMERIC\n");
 			}
 		}
 		sb.append("@data\n");
@@ -399,6 +405,29 @@ public class FeatureGenerator {
 			}
 		}
 		return values;
+	}
+	
+	public Instance generateInstance(Instances template, String sentence_1, String sentence_2) throws IOException {
+		Instance instance = new DenseInstance(template.firstInstance());
+		instance.setDataset(template);
+		Sentence s1 = new Sentence(sentence_1);
+		Sentence s2 = new Sentence(sentence_2);
+		int inx=0;
+		instance.setValue(inx++, 0);
+		double v = 0;
+		for (DATA d : this.dataOption.keySet()) {
+			if (!this.dataOption.get(d)) {
+				continue;
+			}
+			for (FEATURE f : this.featureOption.keySet()) {
+				if (!this.featureOption.get(f)) {
+					continue;
+				}
+				v = this.getFeatureValue(s1, s2, d, f);
+				instance.setValue(inx++, v);
+			}
+		}
+		return instance;
 	}
 
 	private double getFeatureValue(Sentence s1, Sentence s2, DATA d, FEATURE f) {
@@ -483,7 +512,7 @@ public class FeatureGenerator {
 			break;
 		}
 
-		System.out.println(d.name() + "." + f.name() + ": " + v);
+		//System.out.println(d.name() + "." + f.name() + ": " + v);
 
 		return v;
 	}
