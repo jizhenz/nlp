@@ -1,5 +1,6 @@
 /ibm_nlp/target/classes/service/*.class
 /ibm_nlp/doc/~$ReadMe.docx
+/ibm_nlp/dist/nlp/*
 .metadata/*
 !.metadata/.plugins
 .metadata/.plugins/*
