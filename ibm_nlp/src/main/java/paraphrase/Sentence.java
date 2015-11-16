@@ -31,9 +31,7 @@ public class Sentence {
 	private int num_nouns = 0;
 	private int num_verbs = 0;
 
-	public String[] getOrigTokens() {
-		return origTokens;
-	}
+
 
 	public Sentence(String sentence) throws IOException {
 		this.sentence = sentence;
@@ -136,6 +134,46 @@ public class Sentence {
 		for (String t : this.verb_soundex) {
 			System.out.print(t + "\t");
 		}
+	}
+
+	public String[] getOrigTokens() {
+		return origTokens;
+	}
+	
+	public String[] getTags() {
+		return tags;
+	}
+
+	public String[] getStems() {
+		return stems;
+	}
+
+	public String[] getNouns() {
+		return nouns;
+	}
+
+	public String[] getVerbs() {
+		return verbs;
+	}
+
+	public String[] getNoun_stems() {
+		return noun_stems;
+	}
+
+	public String[] getVerb_stems() {
+		return verb_stems;
+	}
+
+	public String[] getSoundex() {
+		return soundex;
+	}
+
+	public String[] getNoun_soundex() {
+		return noun_soundex;
+	}
+
+	public String[] getVerb_soundex() {
+		return verb_soundex;
 	}
 
 	/**

@@ -1,20 +1,31 @@
 package paraphrase;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Map;
 
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import util.Util;
 
 public class FeatureGeneratorTest {
 	
 	private String[] sentence_1 = {"What", "is", "your", "age", "?"};
 	private String[] sentence_2 = {"What", "is", "your", "weight", "?"};
 	private String[] sentence_3 = {"How", "old", "are", "you", "?"};
+	private FeatureGenerator fg = null;
 
 	@BeforeClass
-	public static void oneTimeSetUp() throws IOException {
+	public static void oneTimeSetUp() throws IOException, ClassNotFoundException {
+		Util.init();
 	}
+	
+    @Before
+    public void setUp() {
+    	fg = new FeatureGenerator();
+    }
 	
 	@Test
 	public void testGet_edit_distance() {
@@ -60,24 +71,38 @@ public class FeatureGeneratorTest {
 		System.out.println("cosine_distance: " + FeatureGenerator.get_cosine_distance(sentence_1, sentence_2));
 	}
 
-//	@Test
-//	public void testGet_ngram_distance() {
-//		fail("Not yet implemented");
-//	}
-//
-//	@Test
-//	public void testGet_matching_coefficient() {
-//		fail("Not yet implemented");
-//	}
-//
-//	@Test
-//	public void testGet_dice_coefficient() {
-//		fail("Not yet implemented");
-//	}
-//
-//	@Test
-//	public void testGet_jaccard_coefficient() {
-//		fail("Not yet implemented");
-//	}
+	@Test
+	public void testGet_ngram_distance() {
+		System.out.println("ngram_distance: " + FeatureGenerator.get_ngram_distance(sentence_1, sentence_2));
+	}
+
+	@Test
+	public void testGet_matching_coefficient() {
+		System.out.println("matching_coefficient: " + FeatureGenerator.get_matching_coefficient(sentence_1, sentence_2));
+	}
+
+	@Test
+	public void testGet_dice_coefficient() {
+		System.out.println("dice_coefficient: " + FeatureGenerator.get_dice_coefficient(sentence_1, sentence_2));
+	}
+
+	@Test
+	public void testGet_jaccard_coefficient() {
+		System.out.println("jaccard_coefficient: " + FeatureGenerator.get_jaccard_coefficient(sentence_1, sentence_2));
+	}
+	
+	@Test
+	public void test() {
+		System.out.println(fg.generateArffHeader("train").toString());
+		try {
+			String str1 = String.join(" ", sentence_1);
+			String str2 = String.join(" ", sentence_2);
+			System.out.println(str1 + "\n" + str2 + "\n");
+			System.out.println(Arrays.toString(fg.generateArffDataRow(str1, str2)));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+	}
 
 }

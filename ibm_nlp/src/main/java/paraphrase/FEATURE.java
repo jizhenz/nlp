@@ -3,7 +3,6 @@ package paraphrase;
 public enum FEATURE {
 	 Edit("Edit Distance")
 	,JW("Jaro Winkler Distance")
-	,Soundex("Soundex")
 	,Manhattan("Manhattan Distance")
 	,Euclidean("Euclidean Distance")
 	,Cosine("Cosine Similarity")
