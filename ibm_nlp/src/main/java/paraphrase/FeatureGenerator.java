@@ -330,4 +330,8 @@ public class FeatureGenerator {
 		}
 		return 1.0*cnt_xy/cnt_x_or_y;
 	}
+	
+	public FeatureGenerator() {
+		
+	}
 }

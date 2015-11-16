@@ -46,7 +46,7 @@ public class callClassifier {
         seed=Integer.parseInt(seedS);
       }
 
-      Classifier cccc = Classifier.forName(classifierName,argv);
+      Classifier cccc = Class.forName(classifierName,argv);
 
       Instances trainData = new Instances(new FileReader(trainFile));
       Instances testData = null;

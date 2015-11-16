@@ -20,6 +20,7 @@ public class WekaRandomForestPredictor {
 		IOException ioe = null;
 		
 		try {
+			int nf = rf.getNumFeatures();
 			s1 = new Sentence(sentence_1);
 			s2 = new Sentence(sentence_2);
 			
