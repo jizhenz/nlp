@@ -10,3 +10,12 @@
    3.1 Right click the project
    3.2 Click Run As -> Maven install
    3.2 or Click Run As -> Maven clean
+   
+4. The design:
+   4.1 The class AccountServiceImpl has a map at class level that maintain a lock 
+       for each of the Accounts, using the account ID as key, and ReentrantLock 
+       as value. On first time an account being called, a lock created and put 
+       into the map. All the following calls will use the same lock. This 
+       ensures the thread safety.
+   4.2 In the test class AccountServiceImplTest, there are two methods for testing 
+       transfer: one is sequential, one is parallel using threads.
